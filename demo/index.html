@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Unity WebGL Player | Metadya</title>
+  <link rel="shortcut icon" href="TemplateData/favicon.ico">
+  <link rel="stylesheet" href="./TemplateData/style.css">
+  <script src="bridge.js"></script>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 
+    - primary meta tag
+  -->
+  <title>Woodex - Get Quality Furniture</title>
+  <meta name="title" content="Woodex - Get Quality Furniture">
+  <meta name="description" content="This is an eCommerce html template made by codewithsadee">
+
+  <!-- 
+    - favicon
+  -->
+  <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">
+
+  <!-- 
+    - custom css link
+  -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+
+  <!-- 
+    - google font link
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mr+De+Haviland&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet">
+
+</head>
+
+<body id="top">
+
+  <div id="unity-container" class="unity-desktop">
+    <canvas id="unity-canvas" width=500px height=500px></canvas>
+    <div id="unity-loading-bar">
+      <div id="unity-logo"></div>
+      <div id="unity-progress-bar-empty">
+        <div id="unity-progress-bar-full"></div>
+      </div>
+    </div>
+    <div id="unity-warning"> </div>
+    <div id="unity-footer">
+      <div id="button-group">
+        <div id="Idle" onclick="idle()">Idle</div>
+        <div id="nextPose" onclick="pose()">Pose</div>
+        <div id="dance" onclick="dance()">Dance</div>
+      </div>
+      <div id="fittingRoom">Room</div>
+      <div id="unity-fullscreen-button"></div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var container = document.querySelector("#unity-container");
+    var canvas = document.querySelector("#unity-canvas");
+    var loadingBar = document.querySelector("#unity-loading-bar");
+    var progressBarFull = document.querySelector("#unity-progress-bar-full");
+    var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+    var warningBanner = document.querySelector("#unity-warning");
+
+    function unityShowBanner(msg, type) {
+      function updateBannerVisibility() {
+        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+      }
+      var div = document.createElement('div');
+      div.innerHTML = msg;
+      warningBanner.appendChild(div);
+      if (type == 'error') div.style = 'background: red; padding: 10px;';
+      else {
+        if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+        setTimeout(function () {
+          warningBanner.removeChild(div);
+          updateBannerVisibility();
+        }, 5000);
+      }
+      updateBannerVisibility();
+    }
+
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/dnm2.loader.js";
+    var config = {
+      dataUrl: buildUrl + "/dnm2.data",
+      frameworkUrl: buildUrl + "/dnm2.framework.js",
+      codeUrl: buildUrl + "/dnm2.wasm",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "DefaultCompany",
+      productName: "Metadya",
+      productVersion: "0.1",
+      showBanner: unityShowBanner,
+    };
+
+
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      // Mobile device style: fill the whole browser client area with the game canvas:
+
+      var meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+      document.getElementsByTagName('head')[0].appendChild(meta);
+      container.className = "unity-mobile";
+      canvas.className = "unity-mobile";
+
+
+
+      //unityShowBanner('WebGL builds are not supported on mobile devices.');
+    } else {
+      // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
+
+      canvas.style.width = "500px";
+      canvas.style.height = "500px";
+    }
+
+    loadingBar.style.display = "block";
+    document.getElementById("button-group").style.display = "none";
+    let control = true;
+    var myInstance = null;
+    var script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {
+        progressBarFull.style.width = 100 * progress + "%";
+      }).then((unityInstance) => {
+        window.myInstance = unityInstance;
+        loadingBar.style.display = "none";
+        fullscreenButton.onclick = () => {
+          if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            if (control === true) {
+
+              document.getElementById("button-group").style.display = "flex";
+              fullscreenButton.style.display = "block";
+              document.getElementById("button-group").style.display = "block";
+              control = false;
+            } else {
+              
+              document.getElementById("button-group").style.display = "none";
+              idle();
+              control = true;
+            }
+          }
+          else {
+            if (control === true) {
+              canvas.style.width = "900px";
+              canvas.style.height = "450px";             
+              document.getElementById("button-group").style.display = "flex";
+              fullscreenButton.style.display = "block";
+              document.getElementById("button-group").style.display = "block";
+              control = false;
+            } else {
+              canvas.style.width = "500px";
+              canvas.style.height = "500px";
+              
+              document.getElementById("button-group").style.display = "none";
+              idle();
+              control = true;
+            }
+
+          };
+          room();
+
+        };
+      }).catch((message) => {
+        alert(message);
+      });
+    };
+    document.body.appendChild(script);
+  </script>
+
+
+  <!-- 
+    - #HEADER
+  -->
+
+  <header class="header" data-header>
+  </header>
+
+  <!-- 
+    - #SIDEBAR
+  -->
+
+  <div class="sidebar" data-navbar>
+
+    <button class="nav-close-btn" aria-label="close menu" data-nav-toggler>
+      <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+    </button>
+
+    <div class="wrapper">
+
+      <ul class="sidebar-list">
+
+        <li>
+          <p class="sidebar-list-title">Language</p>
+        </li>
+
+        <li>
+          <a href="#" class="sidebar-link">English</a>
+        </li>
+
+        <li>
+          <a href="#" class="sidebar-link">French</a>
+        </li>
+
+        <li>
+          <a href="#" class="sidebar-link">Arabric</a>
+        </li>
+
+      </ul>
+
+      <ul class="sidebar-list">
+
+        <li>
+          <p class="sidebar-list-title">Currency</p>
+        </li>
+
+        <li>
+          <a href="#" class="sidebar-link">USD - US Dollar</a>
+        </li>
+
+        <li>
+          <a href="#" class="sidebar-link">Euro</a>
+        </li>
+
+        <li>
+          <a href="#" class="sidebar-link">Pound</a>
+        </li>
+
+      </ul>
+
+    </div>
+
+    <nav class="navbar">
+      <ul class="navbar-list">
+
+        <li class="navbar-item">
+          <a href="#home" class="navbar-link" data-nav-link>Home</a>
+        </li>
+
+        <li class="navbar-item">
+          <a href="#about" class="navbar-link" data-nav-link>About</a>
+        </li>
+
+        <li class="navbar-item">
+          <a href="#product" class="navbar-link" data-nav-link>Product</a>
+        </li>
+
+        <li class="navbar-item">
+          <a href="#blog" class="navbar-link" data-nav-link>Blogs</a>
+        </li>
+
+      </ul>
+    </nav>
+
+    <ul class="contact-list">
+
+      <li>
+        <p class="contact-list-title">Contact Us</p>
+      </li>
+
+      <li class="contact-item">
+        <address class="address">
+          69 Halsey St, Ny 10002, New York, United States
+        </address>
+      </li>
+
+      <li class="contact-item">
+        <a href="mailto:support.center@woodex.co" class="contact-link">support.center@woodex.co</a>
+      </li>
+
+      <li class="contact-item">
+        <a href="tel:00001235567890" class="contact-link">(0000) 1235 567890</a>
+      </li>
+
+    </ul>
+
+    <div class="social-wrapper">
+
+      <p class="social-list-title">Follow US On Socials</p>
+
+      <ul class="social-list">
+
+        <li>
+          <a href="#" class="social-link">
+            <ion-icon name="logo-facebook"></ion-icon>
+          </a>
+        </li>
+
+        <li>
+          <a href="#" class="social-link">
+            <ion-icon name="logo-twitter"></ion-icon>
+          </a>
+        </li>
+
+        <li>
+          <a href="#" class="social-link">
+            <ion-icon name="logo-tumblr"></ion-icon>
+          </a>
+        </li>
+
+      </ul>
+
+    </div>
+
+  </div>
+
+  <div class="overlay" data-overlay data-nav-toggler></div>
+
+
+
+  <main>
+    <article>
+
+      <section class="section about" id="about" aria-label="about">
+        <div class="container">
+
+          <h2 class="section-title">Metadya preview</h2>
+
+          <p class="section-text">
+            To get started, please create your avatar in the bottom right section.
+            Then, click on the clothes or hair to dress up your avatar. You can adjust
+            the size of your avatar using the middle mouse button. Please note that this
+            is a preliminary demo version, so it may not perform at 100% quality. Stores and
+            animations will be updated shortly in the future.
+          </p>
+
+        </div>
+      </section>
+
+      <section class="section product" id="product" aria-label="product">
+        <div class="container">
+
+          <div class="title-wrapper">
+            <h2 class="h2 section-title">Products</h2>
+
+            <ul class="filter-btn-list">
+              <li class="black-square">
+              </li>
+              <li class="filter-btn-item">
+                <button class="filter-btn" data-filter-btn="mCloathes">Male Cloathes</button>
+              </li>
+              <li class="filter-btn-item">
+                <button class="filter-btn" data-filter-btn="fCloathes">Female Cloathes</button>
+              </li>
+              <li class="black-square">
+              </li>
+              <li class="filter-btn-item">
+                <button class="filter-btn" data-filter-btn="mHairs">Male Hairs</button>
+              </li>
+              <li class="filter-btn-item">
+                <button class="filter-btn" data-filter-btn="fHairs">Female Hairs</button>
+              </li>
+              <li class="black-square">
+              </li>
+              <li class="filter-btn-item">
+                <button class="filter-btn" data-filter-btn="Colors">Hair Colors</button>
+              </li>
+
+            </ul>
+          </div>
+          <div class="container">
+            <ul class="grid-list product-list" data-filter="mCloathes">
+
+              <li class="mCloathes">
+                <div class="product-card">
+
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="outfit_1()">
+                    <img src="./assets/images/outfit_1.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+
+                  </a>
+                </div>
+              </li>
+
+              <li class="mCloathes">
+                <div class="product-card">
+
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="outfit_4()">
+                    <img src="./assets/images/outfit_4.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+
+                    <ul class="card-action-list">
+
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+
+                    </ul>
+                  </a>
+                </div>
+              </li>
+
+              <li class="mCloathes"></li>
+              <li class="mCloathes"></li>
+
+              <li class="mCloathes">
+                <div class="product-card">
+
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="outfit_5()">
+                    <img src="./assets/images/outfit_5.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+
+                    <ul class="card-action-list">
+
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+
+                    </ul>
+                  </a>
+                </div>
+              </li>
+
+              <li class="fCloathes">
+                <div class="product-card">
+
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="outfit_0()">
+                    <img src="./assets/images/outfit_0.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+
+                    <ul class="card-action-list">
+
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+
+                    </ul>
+                  </a>
+                </div>
+              </li>
+
+
+              <li class="fCloathes">
+                <div class="product-card">
+
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="outfit_2()">
+                    <img src="./assets/images/outfit_2.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+
+                    <ul class="card-action-list">
+
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+
+                    </ul>
+                  </a>
+                </div>
+              </li>
+
+              <li class="fCloathes"></li>
+              <li class="fCloathes"></li>
+
+              <li class="fCloathes">
+                <div class="product-card">
+
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="outfit_3()">
+                    <img src="./assets/images/outfit_3.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+
+                    <ul class="card-action-list">
+
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+
+                    </ul>
+                  </a>
+                </div>
+              </li>
+
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_1()">
+                    <img src="./assets/images/hair_1.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_2()">
+                    <img src="./assets/images/hair_2.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs"></li>
+              <li class="mHairs"></li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_3()">
+                    <img src="./assets/images/hair_3.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_4()">
+                    <img src="./assets/images/hair_4.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs"></li>
+              <li class="mHairs"></li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_5()">
+                    <img src="./assets/images/hair_5.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_6()">
+                    <img src="./assets/images/hair_6.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs"></li>
+              <li class="mHairs"></li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_7()">
+                    <img src="./assets/images/hair_7.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_8()">
+                    <img src="./assets/images/hair_8.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs"></li>
+              <li class="mHairs"></li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_9()">
+                    <img src="./assets/images/hair_9.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_10()">
+                    <img src="./assets/images/hair_10.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs"></li>
+              <li class="mHairs"></li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_11()">
+                    <img src="./assets/images/hair_11.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_12()">
+                    <img src="./assets/images/hair_12.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs"></li>
+              <li class="mHairs"></li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_13()">
+                    <img src="./assets/images/hair_13.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_14()">
+                    <img src="./assets/images/hair_14.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs"></li>
+              <li class="mHairs"></li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_15()">
+                    <img src="./assets/images/hair_15.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_16()">
+                    <img src="./assets/images/hair_16.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs"></li>
+              <li class="mHairs"></li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_17()">
+                    <img src="./assets/images/hair_17.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_18()">
+                    <img src="./assets/images/hair_18.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs"></li>
+              <li class="mHairs"></li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_19()">
+                    <img src="./assets/images/hair_19.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_20()">
+                    <img src="./assets/images/hair_20.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs"></li>
+              <li class="mHairs"></li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_21()">
+                    <img src="./assets/images/hair_21.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_22()">
+                    <img src="./assets/images/hair_22.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs"></li>
+              <li class="mHairs"></li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_23()">
+                    <img src="./assets/images/hair_23.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_24()">
+                    <img src="./assets/images/hair_24.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="mHairs"></li>
+              <li class="mHairs"></li>
+              <li class="mHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="hair_25()">
+                    <img src="./assets/images/hair_25.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <!--***********************************************************************************************-->
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="fhair_1()">
+                    <img src="./assets/images/fhair_1.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="fhair_2()">
+                    <img src="./assets/images/fhair_2.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs"></li>
+              <li class="fHairs"></li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="fhair_3()">
+                    <img src="./assets/images/fhair_3.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="fhair_4()">
+                    <img src="./assets/images/fhair_4.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs"></li>
+              <li class="fHairs"></li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="fhair_5()">
+                    <img src="./assets/images/fhair_5.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="fhair_6()">
+                    <img src="./assets/images/fhair_6.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs"></li>
+              <li class="fHairs"></li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="fhair_7()">
+                    <img src="./assets/images/fhair_7.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="fhair_8()">
+                    <img src="./assets/images/fhair_8.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs"></li>
+              <li class="fHairs"></li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;" onclick="fhair_9()">
+                    <img src="./assets/images/fhair_9.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_10()">
+                    <img src="./assets/images/fhair_10.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs"></li>
+              <li class="fHairs"></li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_11()">
+                    <img src="./assets/images/fhair_11.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_12()">
+                    <img src="./assets/images/fhair_12.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs"></li>
+              <li class="fHairs"></li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_13()">
+                    <img src="./assets/images/fhair_13.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_14()">
+                    <img src="./assets/images/fhair_14.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs"></li>
+              <li class="fHairs"></li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_15()">
+                    <img src="./assets/images/fhair_15.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_16()">
+                    <img src="./assets/images/fhair_16.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs"></li>
+              <li class="fHairs"></li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_17()">
+                    <img src="./assets/images/fhair_17.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_18()">
+                    <img src="./assets/images/fhair_18.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs"></li>
+              <li class="fHairs"></li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_19()">
+                    <img src="./assets/images/fhair_19.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_20()">
+                    <img src="./assets/images/fhair_20.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs"></li>
+              <li class="fHairs"></li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_21()">
+                    <img src="./assets/images/fhair_21.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_22()">
+                    <img src="./assets/images/fhair_22.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs"></li>
+              <li class="fHairs"></li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_23()">
+                    <img src="./assets/images/fhair_23.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_24()">
+                    <img src="./assets/images/fhair_24.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs"></li>
+              <li class="fHairs"></li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_25()">
+                    <img src="./assets/images/fhair_25.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="fHairs">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="fhair_26()">
+                    <img src="./assets/images/fhair_26.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="Colors">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="colors_aubum()">
+                    <img src="./assets/images/colors_auburn.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="Colors">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="colors_black()">
+                    <img src="./assets/images/colors_black.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+
+              <li class="Colors"></li>
+              <li class="Colors"></li>
+
+              <li class="Colors">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="colors_brown()">
+                    <img src="./assets/images/colors_brown.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="Colors">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="colors_green()">
+                    <img src="./assets/images/colors_green.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="Colors"></li>
+              <li class="Colors"></li>
+
+              <li class="Colors">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="colors_grey()">
+                    <img src="./assets/images/colors_grey.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="Colors">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="colors_purple()">
+                    <img src="./assets/images/colors_purple.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+              <li class="Colors"></li>
+              <li class="Colors"></li>
+
+              <li class="Colors">
+                <div class="product-card">
+                  <a class="card-banner img-holder has-before" style="--width: 300; --height: 300;"
+                    onclick="colors_yellow()">
+                    <img src="./assets/images/colors_yellow.png" width="300" height="300" loading="lazy"
+                      alt="Artificial potted plant" class="img-cover">
+                    <ul class="card-action-list">
+                      <li>
+                        <button class="card-action-btn" aria-label="add to cart" title="add to cart">
+                          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </li>
+                    </ul>
+                  </a>
+                </div>
+              </li>
+
+
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section blog" id="blog" aria-label="blog">
+      </section>
+    </article>
+  </main>
+
+  </footer>
+
+  <a href="#top" class="back-top-btn" aria-label="back to top" data-back-top-btn>
+    <ion-icon name="arrow-up" aria-hidden="true"></ion-icon>
+  </a>
+
+  <script src="./assets/js/script.js" defer></script>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>

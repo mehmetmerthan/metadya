@@ -1,0 +1,129 @@
+body {
+    padding: 0;
+    margin: 0
+}
+
+#unity-container {
+    position: absolute
+}
+
+#unity-container.unity-desktop {
+    position: fixed;
+    top: 200px;
+    right: 50px;
+    z-index: 2;
+}
+
+#unity-container.unity-mobile {
+    width: 100%;
+    height: 35%;
+    position: fixed;
+    top: 150px;
+    right: 50;
+    z-index: 2;
+}
+
+#unity-canvas {
+    background: #FFFFFF
+}
+
+.unity-mobile #unity-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+#unity-loading-bar {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: none
+}
+
+#unity-logo {
+    width: 154px;
+    height: 130px;
+}
+
+#unity-progress-bar-empty {
+    width: 141px;
+    height: 18px;
+    margin-top: 10px;
+    margin-left: 6.5px;
+    background: url('progress-bar-empty-light.png') no-repeat center
+}
+
+#unity-progress-bar-full {
+    width: 0%;
+    height: 18px;
+    margin-top: 10px;
+    background: url('progress-bar-full-light.png') no-repeat center
+}
+
+#unity-footer {
+    position: relative;
+}
+
+.unity-mobile #unity-footer {
+    display: block;
+}
+
+#Idle,
+#nextPose,
+#dance {
+    display: inline-block;
+    padding: 10px;
+    /*    */
+    line-height: 20px;
+    font-family: arial;
+    font-size: 18px;
+    order: 1;
+    background-color: #4CAF50;
+    /* Buton arka plan rengi */
+    color: white;
+    /* Buton metin rengi */
+    cursor: pointer;
+    /* Fare üzerine gelince imleci değiştir */
+    width: 80px;
+    border-radius: 10px;
+    margin-right: 10px;
+}
+
+#Idle:hover,
+#nextPose:hover,
+#dance:hover {
+    background-color: #45a049;
+    /* Fare üzerine gelince butonun arka plan rengi */
+}
+
+#Idle:active,
+#nextPose:active,
+#dance:active {
+    background-color: #367a36;
+    /* Butona tıklanınca arka plan rengi */
+}
+
+#fittingRoom {
+    float: right;
+    margin-right: 10px;
+    line-height: 38px;
+    font-family: arial;
+    font-size: 18px;
+}
+
+#unity-fullscreen-button {
+    float: right;
+    width: 38px;
+    height: 38px;
+    background: url('fullscreen-button.png') no-repeat center;
+}
+
+#unity-warning {
+    position: absolute;
+    left: 50%;
+    top: 5%;
+    transform: translate(-50%);
+    background: white;
+    padding: 10px;
+    display: none
+}
