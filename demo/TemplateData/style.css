@@ -15,11 +15,11 @@ body {
 }
 
 #unity-container.unity-mobile {
-    width: 100%;
-    height: 35%;
+    width: 350px;
+    height: 175px;
     position: fixed;
     top: 150px;
-    right: 50;
+    margin-left: 15px;
     z-index: 2;
 }
 
@@ -68,6 +68,21 @@ body {
     display: block;
 }
 
+#Room {
+    float: right;
+    font-size: 50px; 
+    color:#000000
+}
+#Fix{
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.293);
+    width: 150px;
+    height: 100px;
+    margin-left: 150px;
+    margin-top: 180px;
+    z-index: 3;
+}
+
 #Idle,
 #nextPose,
 #dance {
@@ -87,6 +102,27 @@ body {
     width: 80px;
     border-radius: 10px;
     margin-right: 10px;
+}
+
+#IdleMobile,
+#nextPoseMobile,
+#danceMobile {
+    display: inline-block;
+    padding: 5px;
+    /*    */
+    line-height: 10px;
+    font-family: arial;
+    font-size: 10px;
+    order: 1;
+    background-color: #a9e4ab;
+    /* Buton arka plan rengi */
+    color: white;
+    /* Buton metin rengi */
+    cursor: pointer;
+    /* Fare üzerine gelince imleci değiştir */
+    width: 40px;
+    border-radius: 5px;
+    margin-right: 20px;
 }
 
 #Idle:hover,

@@ -7,40 +7,30 @@
   <title>Unity WebGL Player | Metadya</title>
   <link rel="shortcut icon" href="TemplateData/favicon.ico">
   <link rel="stylesheet" href="./TemplateData/style.css">
-  <script src="bridge.js"></script>
-
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- 
-    - primary meta tag
-  -->
-  <title>Woodex - Get Quality Furniture</title>
+
+  <!-- <title>Woodex - Get Quality Furniture</title> -->
   <meta name="title" content="Woodex - Get Quality Furniture">
   <meta name="description" content="This is an eCommerce html template made by codewithsadee">
 
-  <!-- 
-    - favicon
-  -->
   <link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">
 
-  <!-- 
-    - custom css link
-  -->
   <link rel="stylesheet" href="./assets/css/style.css">
 
-  <!-- 
-    - google font link
-  -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tangerine">
   <link href="https://fonts.googleapis.com/css2?family=Mr+De+Haviland&family=Roboto:wght@400;500;700&display=swap"
     rel="stylesheet">
-
+  <script src="https://kit.fontawesome.com/7d0b102f8a.js" crossorigin="anonymous"></script>
+  <script src="myJS/bridge.js"></script>
+  <script src="myJS/myScript.js"></script>
 </head>
 
 <body id="top">
-
+  <!-- <div id="Fix" onclick="fix()"></div> -->
   <div id="unity-container" class="unity-desktop">
     <canvas id="unity-canvas" width=500px height=500px></canvas>
     <div id="unity-loading-bar">
@@ -51,145 +41,24 @@
     </div>
     <div id="unity-warning"> </div>
     <div id="unity-footer">
-      <div id="button-group">
+      <div id="button-group" style="margin-left: 15px;">
         <div id="Idle" onclick="idle()">Idle</div>
         <div id="nextPose" onclick="pose()">Pose</div>
         <div id="dance" onclick="dance()">Dance</div>
       </div>
+      <div id="Room" onclick="Room()" class="fa-solid fa-arrows-left-right"></div>
       <div id="fittingRoom">Room</div>
       <div id="unity-fullscreen-button"></div>
     </div>
   </div>
   </div>
   <script>
-    var container = document.querySelector("#unity-container");
-    var canvas = document.querySelector("#unity-canvas");
-    var loadingBar = document.querySelector("#unity-loading-bar");
-    var progressBarFull = document.querySelector("#unity-progress-bar-full");
-    var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-    var warningBanner = document.querySelector("#unity-warning");
-
-    function unityShowBanner(msg, type) {
-      function updateBannerVisibility() {
-        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-      }
-      var div = document.createElement('div');
-      div.innerHTML = msg;
-      warningBanner.appendChild(div);
-      if (type == 'error') div.style = 'background: red; padding: 10px;';
-      else {
-        if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-        setTimeout(function () {
-          warningBanner.removeChild(div);
-          updateBannerVisibility();
-        }, 5000);
-      }
-      updateBannerVisibility();
-    }
-
-    var buildUrl = "Build";
-    var loaderUrl = buildUrl + "/dnm2.loader.js";
-    var config = {
-      dataUrl: buildUrl + "/dnm2.data",
-      frameworkUrl: buildUrl + "/dnm2.framework.js",
-      codeUrl: buildUrl + "/dnm2.wasm",
-      streamingAssetsUrl: "StreamingAssets",
-      companyName: "DefaultCompany",
-      productName: "Metadya",
-      productVersion: "0.1",
-      showBanner: unityShowBanner,
-    };
-
-
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-      // Mobile device style: fill the whole browser client area with the game canvas:
-
-      var meta = document.createElement('meta');
-      meta.name = 'viewport';
-      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-      document.getElementsByTagName('head')[0].appendChild(meta);
-      container.className = "unity-mobile";
-      canvas.className = "unity-mobile";
-
-
-
-      //unityShowBanner('WebGL builds are not supported on mobile devices.');
-    } else {
-      // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-
-      canvas.style.width = "500px";
-      canvas.style.height = "500px";
-    }
-
-    loadingBar.style.display = "block";
-    document.getElementById("button-group").style.display = "none";
-    let control = true;
-    var myInstance = null;
-    var script = document.createElement("script");
-    script.src = loaderUrl;
-    script.onload = () => {
-      createUnityInstance(canvas, config, (progress) => {
-        progressBarFull.style.width = 100 * progress + "%";
-      }).then((unityInstance) => {
-        window.myInstance = unityInstance;
-        loadingBar.style.display = "none";
-        fullscreenButton.onclick = () => {
-          if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            if (control === true) {
-
-              document.getElementById("button-group").style.display = "flex";
-              fullscreenButton.style.display = "block";
-              document.getElementById("button-group").style.display = "block";
-              control = false;
-            } else {
-              
-              document.getElementById("button-group").style.display = "none";
-              idle();
-              control = true;
-            }
-          }
-          else {
-            if (control === true) {
-              canvas.style.width = "900px";
-              canvas.style.height = "450px";             
-              document.getElementById("button-group").style.display = "flex";
-              fullscreenButton.style.display = "block";
-              document.getElementById("button-group").style.display = "block";
-              control = false;
-            } else {
-              canvas.style.width = "500px";
-              canvas.style.height = "500px";
-              
-              document.getElementById("button-group").style.display = "none";
-              idle();
-              control = true;
-            }
-
-          };
-          room();
-
-        };
-      }).catch((message) => {
-        alert(message);
-      });
-    };
-    document.body.appendChild(script);
+    myJsScript();
   </script>
-
-
-  <!-- 
-    - #HEADER
-  -->
 
   <header class="header" data-header>
   </header>
-
-  <!-- 
-    - #SIDEBAR
-  -->
-
   <div class="sidebar" data-navbar>
-
     <button class="nav-close-btn" aria-label="close menu" data-nav-toggler>
       <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
     </button>
@@ -330,16 +199,18 @@
             the size of your avatar using the middle mouse button. Please note that this
             is a preliminary demo version, so it may not perform at 100% quality. Stores and
             animations will be updated shortly in the future.
+
+            If you are using a mobile phone, press the icon on the right and after selecting the file button,
+            touch anywhere on the screen
           </p>
 
         </div>
       </section>
-
+      <h2 class="h2 section-title" style="margin-left: 180px;">Products</h2>
       <section class="section product" id="product" aria-label="product">
         <div class="container">
 
           <div class="title-wrapper">
-            <h2 class="h2 section-title">Products</h2>
 
             <ul class="filter-btn-list">
               <li class="black-square">

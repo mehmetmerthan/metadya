@@ -1,7 +1,7 @@
 import http.server
 import socketserver
 
-PORT = 3000  # Yerel sunucu portu
+PORT = 8080  # Yerel sunucu portu
 # DIRECTORY = "/"  # Web sitesinin klasör yolunu buraya girin
 
 Handler = http.server.SimpleHTTPRequestHandler

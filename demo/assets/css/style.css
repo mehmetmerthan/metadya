@@ -482,20 +482,20 @@ body.active {
 \*-----------------------------------*/
 
 .about {
-  text-align: center;
+  text-align: left;
   position: relative;
   z-index: 1;
 }
 
 .about .section-title {
-  font-family: var(--ff-mr_de_haviland);
+  font-family: "Tangerine", sans-serif;/* var(--ff-mr_de_haviland); */
   font-size: var(--fs-1);
   font-weight: var(--fw-500);
+  text-shadow: 4px 4px 4px #aaa;
 }
 
 .about .section-text {
   margin-block: 12px 45px;
-  z-index: 2;
   position: relative;
   z-index: 1;
 }
@@ -1185,7 +1185,7 @@ a.card-meta-text:is(:hover, :focus) {
 
   .about .section-text {
     max-width: 85ch;
-    margin-inline: auto;
+    margin-inline: -10px;
   }
 
 
