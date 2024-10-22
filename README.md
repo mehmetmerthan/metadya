@@ -13,7 +13,7 @@ Metadya is a virtual try-on website that allows users to create a 3D model of th
 
 ## Screenshots
 
-![Metadya Virtual Mall](/assets/screenshots/sreenshot.jpeg)
+![Metadya Virtual Mall](/assets/screenshots/screenshot.jpeg)
 
 ## Contact
 
